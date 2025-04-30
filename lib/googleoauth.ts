@@ -12,7 +12,7 @@ export default async function GoogleOAuth(code: string){
                     code,
                     client_id: process.env.GOOGLE_CLIENT_ID!,
                     client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-                    redirect_uri: "http://localhost:3000/callback",
+                    redirect_uri: "https://mp-6-iota.vercel.app/callback",
                     grant_type: 'authorization_code',
                 }),
             });

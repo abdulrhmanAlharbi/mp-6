@@ -1,53 +1,50 @@
-"use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import OAuthProfile from "@/components/oauthprofile";
 import GoogleOAuth from "@/lib/googleoauth";
+import { redirect } from "next/navigation";
 import GoogleUserInfo from "@/lib/googleuserinfo";
-import { GoogleUser } from "@/lib/types";
 
-const MainStyling =
-    "flex flex-col items-center gap-5 pt-60 min-h-screen p-8 bg-gradient-to-b from-[#c6c6c6] to-[#fbfbfb] text-[#191919]";
+const MainStyling = "flex flex-col items-center gap-5 pt-60 min-h-screen p-8 bg-gradient-to-b from-[#c6c6c6]  to-[#fbfbfb] text-[#191919]"
 
-export default function CallbackPage() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const [userinfo, setUserinfo] = useState<GoogleUser | null>(null);
+export default async function callbackPage
+({
+     searchParams,
+ }:
+ {
+     searchParams: Promise<{ code: string }>;
+ }) {
 
-    useEffect(() => {
-        const code = searchParams.get("code");
+    const {code} = await searchParams;
 
-        if (!code) {
-            console.log("No code found.");
-            router.push("/error1");
-            return;
+    if (!code) {
+        console.log("No code found.");
+        redirect("/");
+    }
+
+    try{
+        const tokendata = await GoogleOAuth(code);
+        console.log(tokendata);
+
+        if (!tokendata.access_token) {
+            redirect("/");
         }
 
-        (async () => {
-            try {
-                const tokendata = await GoogleOAuth(code);
+        //fetch user info server side to display to the user faster
+        const userinfo = await GoogleUserInfo(tokendata.access_token);
+        console.log(userinfo);
 
-                if (!tokendata.access_token) {
-                    router.push("/error2");
-                    return;
-                }
+        return (
+            <main className={MainStyling}>
+                <OAuthProfile name={userinfo.name} email={userinfo.email} picture={userinfo.picture} />
+            </main>
+        );
 
-                const info = await GoogleUserInfo(tokendata.access_token);
-                setUserinfo(info);
-            } catch (err) {
-                console.error(err);
-                router.push("/error3");
-            }
-        })();
-    }, [searchParams, router]);
+    } catch (err) {
+        console.log(err);
+        redirect("/");
+    }
 
-    if (!userinfo) return <div className="p-10">Loading...</div>;
 
-    return (
-        <main className={MainStyling}>
-            <OAuthProfile name={userinfo.name} email={userinfo.email} picture={userinfo.picture}
-            />
-        </main>
-    )
 }
+
+
