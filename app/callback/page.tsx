@@ -17,7 +17,8 @@ export default async function callbackPage
     const {code} = await searchParams;
 
     if (!code) {
-        redirect("/");
+        console.log("No code found.");
+        redirect("/error1");
     }
 
     try{
@@ -25,7 +26,7 @@ export default async function callbackPage
         console.log(tokendata);
 
         if (!tokendata.access_token) {
-            redirect("/");
+            redirect("/error2");
         }
 
         //fetch user info server side to display to the user faster
