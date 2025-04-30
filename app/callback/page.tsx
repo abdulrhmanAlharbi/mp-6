@@ -5,19 +5,23 @@ import GoogleUserInfo from "@/lib/googleuserinfo";
 
 const MainStyling = "flex flex-col items-center gap-5 pt-60 min-h-screen p-8 bg-gradient-to-b from-[#c6c6c6]  to-[#fbfbfb] text-[#191919]"
 
+//https://nextjs.org/docs/app/api-reference/file-conventions/page#searchparams-optional
 export default async function callbackPage
 ({
-    searchParams
+    searchParams,
  }:
  {
-    searchParams: { code?: string };
+    searchParams: Promise<{ code: string }>;
  }) {
-    if (!searchParams.code) {
+
+    const {code} = await searchParams;
+
+    if (!code) {
         redirect("/");
     }
 
     try{
-        const tokendata = await GoogleOAuth(searchParams.code);
+        const tokendata = await GoogleOAuth(code);
         console.log(tokendata);
 
         if (!tokendata.access_token) {
