@@ -1,7 +1,7 @@
 const ContainerStyling = "flex flex-col justify-center items-center border-[#c6c6c6] max-w-xl w-full p-8 gap-9 rounded-2xl shadow-lg border-2 bg-[#fbfbfb] ]"
 
 export default function OAuthWindow() {
-    const redirect = "http://localhost:3000/callback";
+    const redirect = "https://mp-6-iota.vercel.app/callback";
 
     const authrequest =
         "https://accounts.google.com/o/oauth2/v2/auth"          +
